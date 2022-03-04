@@ -1,0 +1,13 @@
+name: atop_shiny_app
+title:
+username:
+account: sfang47
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5781536
+bundleId: 5642914
+url: https://sfang47.shinyapps.io/atop_shiny_app/
+when: 1646412037.27162
+lastSyncTime: 1646412037.27164
+asMultiple: FALSE
+asStatic: FALSE

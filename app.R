@@ -6,20 +6,12 @@
 #
 #    http://shiny.rstudio.com/
 #
-
 library(shiny)
-
-# Install the pacman package if not installed
-
-if (!require("pacman")) install.packages("pacman")
-
-# Install and load the necessary packages using pacman
-
-pacman::p_load(tidyverse, knitr, rmarkdown, haven, ggplot2, 
-               readxl, magrittr, lubridate, devtools,
-               openxlsx, labelled, stargazer, plotly,
-               ggpubr, curl, usmap, rworldmap, tidyr, 
-               webshot, zoo, kableExtra, cshapes, visNetwork)
+library(haven)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(reshape2)
 
 #---------------LOAD & TRANSFORM DATA --------------
 # country-year level data (e.g., one row for US-2020)
@@ -51,6 +43,13 @@ ui <- fluidPage(
     # Application title
     titlePanel("ATOP Alliance Over Time by Country"),
     fluidRow(
+      column(4,
+             tags$a(href="https://github.com/Siqi-Fang/ATOP_Shiny_App", 
+                    "Github")),
+      column(4,
+             tags$a(href="http://www.atopdata.org/", "Database"))
+      ),
+    fluidRow(
     # Text Input with selection
     column(4,hr(),
            selectInput('name1', # selection result stored in 
@@ -68,11 +67,6 @@ ui <- fluidPage(
     mainPanel( # plotOutput take a variable from output 
           plotOutput("distPlot"))
     )
-
-
-# load ggplot2
-library(ggplot2)
-library(reshape2)
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
