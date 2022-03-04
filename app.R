@@ -30,7 +30,7 @@ for(i in 1:nrow(cowid)) {
   state_data <- atop5_0sy %>% filter(state==code)
   state_data$count = rowSums(!is.na(state_data %>% select(starts_with("atopid"))))
   state_data = subset(state_data, select=c(year,count)) 
-  names(state_data)[names(state_data) == "count"] <- name 
+  state_data = rename(state_data, !!name := count)
   # result is in single file with each country = 1 col, named by StateAbb
   states_count_by_year = merge(x = states_count_by_year, y = state_data, by = 
                                  "year", all.x = TRUE)
