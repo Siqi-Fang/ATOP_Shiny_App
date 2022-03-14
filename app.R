@@ -7,35 +7,10 @@
 #    http://shiny.rstudio.com/
 #
 library(shiny)
-library(haven)
-library(dplyr)
-library(readr)
+library(plotly)
 library(ggplot2)
-library(reshape2)
 
-#---------------LOAD & TRANSFORM DATA --------------
-# country-year level data (e.g., one row for US-2020)
-atop5_0sy <- read_dta("ATOP 5_0 (dta)/atop5_0sy.dta")
-
-# Correlates of War country code, country names, and abbreviations
-cowid <- read_csv("ATOP 5_0 (dta)/COW country codes.csv") %>%
-  distinct(StateAbb, CCode, StateNme) # unique names
-
-states_count_by_year <-data.frame(year = c(1815:2018))
-# iterate thru all countries 
-for(i in 1:nrow(cowid)) { 
-  code = as.character(cowid[i,]$CCode)      # local vars
-  name = cowid[i,]$StateAbb
-  # each time count the allies for 1 country 
-  state_data <- atop5_0sy %>% filter(state==code)
-  state_data$count = rowSums(!is.na(state_data %>% select(starts_with("atopid"))))
-  state_data = subset(state_data, select=c(year,count)) 
-  state_data = rename(state_data, !!name := count)
-  # result is in single file with each country = 1 col, named by StateAbb
-  states_count_by_year = merge(x = states_count_by_year, y = state_data, by = 
-                                 "year", all.x = TRUE)
-}
-
+source("data_cleaning.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -65,35 +40,37 @@ ui <- fluidPage(
     ),
         # Show a plot of the generated distribution
     mainPanel( # plotOutput take a variable from output 
-          plotOutput("distPlot"))
+          plotlyOutput("AC"))
     )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$distPlot <- 
-      renderPlot({                      
+    output$AC <- 
+      renderPlotly({
         # match by abbriviation 
         country1 <- cowid[cowid$StateNme==input$name1,]$StateAbb
         country2 <- cowid[cowid$StateNme==input$name2,]$StateAbb
+        
         # set x axis lim (# drop rows w/ both na's & get min&max)
-        state <- data.frame(country1 = get(country1,states_count_by_year), 
-                            country2 = get(country2,states_count_by_year),
-                            year = states_count_by_year$year)
+        state <- data.frame(year = states_count_by_year$year)
+        state[,country1] <-get(country1,states_count_by_year)
+        state[,country2] <-get(country2,states_count_by_year)
         state <- filter(state, rowSums(is.na(state)) != 2) 
         xmin <- min(state$year)
         xmax <- max(state$year)
-        # plot !
+        
+        # transform data
         state <- melt(state,id.vars = 'year', variable.name = 'country')
         
-        ggplot(state, aes(year,value,colour=country)) +
-          geom_point()+
-          ggtitle("Alliances Count Over Time")+
-          labs(y="alliance count")+
-          scale_color_discrete(name="country",
-                             labels=c(country1,country2))+
-          xlim(xmin,xmax)
+        pal <- c("cadetblue", "indianred")
+        #pal <- setNames(pal, c(country1,country2))
+        plot_ly(data = state, x = ~year, y=~value, 
+                color = ~country,
+                colors = pal)
       })
+    
+    
 }
 
 # Run the application 
