@@ -17,3 +17,4 @@ Visualization of ATOP data using R Shiny app.
 UI documentation:
 - [basic shiny](https://shiny.rstudio.com/articles/templates.html)
 - [dahsboard customization](https://rstudio.github.io/shinydashboard/appearance.html)
+- [icons](https://shields.io/)
