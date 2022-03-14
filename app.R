@@ -10,44 +10,72 @@ library(shiny)
 library(plotly)
 library(ggplot2)
 library(visNetwork)
+library(shinydashboard)
 
 source("data_cleaning.R")
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+ui <- dashboardPage(
 
-    # Application title
-    titlePanel("ATOP Alliance Over Time by Country"),
-    fluidRow(
-      # need to wrap raw html statements with HTML("")
-      column(4,
-             HTML("<a href='https://github.com/Siqi-Fang/ATOP_Shiny_App'>
+    # --------- Side Nav Bar ------------
+    dashboardHeader(
+      title= "ATOP"
+    ),
+    
+    dashboardSidebar(
+      sidebarMenu(
+        #menuItem("Home", tabName = "tab_dashboard", icon = icon("dashboard")),
+        menuItem("Alliance Count", tabName = "alliance_count"),
+        menuItem("Networks", tabName = "networks"),
+        menuItem("About", tabName = "tab_about", icon = icon("info"))
+      )
+    ),
+    
+  #---------- Nav Bar Content -----------------
+    dashboardBody(
+      tabItems(
+        # Homepage 
+        #tabItem("tab_dashboard",tags$head())
+        # Alliance Count ------------------------
+        tabItem("alliance_count",
+                h2("ATOP Alliance Count Over Time"),
+                fluidRow(
+                  # Selection 
+                  column(4,hr(),
+                         selectInput('name1', # selection result stored in 
+                                     'Type or select country1 to plot', #label
+                                     cowid$StateNme,  # default = 1st item
+                                     selectize=TRUE)),
+                  column(4,hr(),
+                         selectInput('name2', # selection result stored in 
+                                     'Type or select country2 to plot', #label
+                                     cowid$StateNme,  # default = 1st item
+                                     selected = "Canada",
+                                     selectize=TRUE))),
+
+                plotlyOutput("AC")      
+                ), # alliance end <<<<<<<
+        
+        # Networks Graph -----------------
+        tabItem("networks",
+                visNetworkOutput("Network")
+                ), #  networks end <<<<<<<<<<<<
+        
+        # About Page --------------
+        tabItem("tab_about",
+                fluidRow(span("See the code:  "),
+                  # need to wrap raw html statements with HTML("")
+                         HTML("<a href='https://github.com/Siqi-Fang/ATOP_Shiny_App'>
                     <img src='https://img.shields.io/badge/GitHub-black??
                     style=plastic&logo=github'></a>")),
-      column(4,
-             HTML("<a href='http://www.atopdata.org/'>
+                fluidRow(span("Data Source:  "),
+                         HTML("<a href='http://www.atopdata.org/'>
                   <img src='https://img.shields.io/badge/ATOP-Database-black
-                  ??style=plastic'></a>"))),
-    fluidRow(
-    # Text Input with selection
-    column(4,hr(),
-           selectInput('name1', # selection result stored in 
-                       'Type or select country1 to plot', #label
-                        cowid$StateNme,  # default = 1st item
-                        selectize=TRUE)),
-    column(4,hr(),
-           selectInput('name2', # selection result stored in 
-                       'Type or select country2 to plot', #label
-                       cowid$StateNme,  # default = 1st item
-                       selected = "Canada",
-                       selectize=TRUE))
-    ),
-    # Show a plot of the generated distribution
-    mainPanel( 
-          plotlyOutput("AC"),
-          visNetworkOutput("Network")
-          )
-  )
+                  ??style=plastic'></a>"))
+                )# about end <<<<<<<<<<<<<<<<<<
+      ), # tabitems end
+    )#dash body end
+)
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
