@@ -9,6 +9,7 @@
 library(shiny)
 library(plotly)
 library(ggplot2)
+library(visNetwork)
 
 source("data_cleaning.R")
 
@@ -41,10 +42,12 @@ ui <- fluidPage(
                        selected = "Canada",
                        selectize=TRUE))
     ),
-        # Show a plot of the generated distribution
-    mainPanel( # plotOutput take a variable from output 
-          plotlyOutput("AC"))
-    )
+    # Show a plot of the generated distribution
+    mainPanel( 
+          plotlyOutput("AC"),
+          visNetworkOutput("Network")
+          )
+  )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -57,6 +60,7 @@ server <- function(input, output) {
         
         # set x axis lim (# drop rows w/ both na's & get min&max)
         state <- data.frame(year = states_count_by_year$year)
+        # name column with the country abbr
         state[,country1] <-get(country1,states_count_by_year)
         state[,country2] <-get(country2,states_count_by_year)
         state <- filter(state, rowSums(is.na(state)) != 2) 
@@ -67,12 +71,17 @@ server <- function(input, output) {
         state <- melt(state,id.vars = 'year', variable.name = 'country')
         
         pal <- c("cadetblue", "indianred")
-        #pal <- setNames(pal, c(country1,country2))
         plot_ly(data = state, x = ~year, y=~value, 
                 color = ~country,
                 colors = pal)
       })
     
+    output$Network <- 
+      renderVisNetwork({
+        visNetwork(nodes, links, width="100%",
+                   main="US's defensive military alliance partners in 2018", 
+                   submain="Created by Ahra Wu (Source: ATOP)") 
+      })
     
 }
 
