@@ -5,9 +5,9 @@ account: sfang47
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5781536
-bundleId: 5644209
+bundleId: 5679494
 url: https://sfang47.shinyapps.io/atop_shiny_app/
-when: 1646431773.45863
-lastSyncTime: 1646431773.45865
+when: 1647230054.83999
+lastSyncTime: 1647230054.84
 asMultiple: FALSE
 asStatic: FALSE

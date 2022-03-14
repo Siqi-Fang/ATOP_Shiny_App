@@ -18,12 +18,15 @@ ui <- fluidPage(
     # Application title
     titlePanel("ATOP Alliance Over Time by Country"),
     fluidRow(
+      # need to wrap raw html statements with HTML("")
       column(4,
-             tags$a(href="https://github.com/Siqi-Fang/ATOP_Shiny_App", 
-                    "Github")),
+             HTML("<a href='https://github.com/Siqi-Fang/ATOP_Shiny_App'>
+                    <img src='https://img.shields.io/badge/GitHub-black??
+                    style=plastic&logo=github'></a>")),
       column(4,
-             tags$a(href="http://www.atopdata.org/", "Database"))
-      ),
+             HTML("<a href='http://www.atopdata.org/'>
+                  <img src='https://img.shields.io/badge/ATOP-Database-black
+                  ??style=plastic'></a>"))),
     fluidRow(
     # Text Input with selection
     column(4,hr(),
